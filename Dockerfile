@@ -3,14 +3,15 @@ FROM alpine:3.9
 RUN apk update && apk add python3 py-pip py-virtualenv uwsgi-python3
 
 RUN pip3 install --upgrade pip
-COPY ./requirements.txt /application/requirements.txt
 
-WORKDIR /application
+WORKDIR /app
+
+COPY ./requirements.txt requirements.txt
 
 RUN pip3 install -r requirements.txt
 
-COPY ./application /application
+COPY . /app
 
 ENTRYPOINT [ "python3" ]
 
-CMD [ "entrypoint.py" ]
+CMD [ "app/app.py" ]
