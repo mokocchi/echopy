@@ -12,10 +12,9 @@ RUN mkdir venv
 RUN mkdir log
 RUN touch log/error.log
 RUN touch log/access.log
-RUN chown 0 venv log/error.log log/access.log
+RUN chown 1000140001 venv log/error.log log/access.log
 
-
-USER 0
+USER 1000140001
 
 COPY ./app .
 
@@ -27,4 +26,4 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 EXPOSE 5000
 
-CMD gunicorn app:app -b 0.0.0.0:5000 --error-logfile log/error.log --access-logfile log/access.log --capture_output
+CMD gunicorn app:app -b 0.0.0.0:5000 --error-logfile log/error.log --access-logfile log/access.log
