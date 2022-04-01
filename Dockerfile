@@ -1,36 +1,27 @@
 FROM alpine:3.15
 
 RUN apk update && apk add --no-cache python3 py-pip py-virtualenv python3-dev
-RUN apk add --no-cache\
-		gcc \
-		libc-dev \
-		linux-headers \
-	;
 
 RUN apk add postgresql-client
 
-WORKDIR /echopy
+WORKDIR /app
 
 COPY ./requirements.txt requirements.txt
 
-RUN mkdir -p /.local/bin
+RUN mkdir venv
 
-RUN chown -R 1000:1000 /.local
+RUN chown 0 venv
 
-USER 1000
+USER 0
 
-ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/.local/bin
+COPY ./app .
 
-COPY ./echopy /echopy
+ENV VIRTUAL_ENV=venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN source /echopy/bin/activate
-
-RUN pip3 install --no-cache-dir --user -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 EXPOSE 5000
 
-WORKDIR /echopy/app
-
-ENTRYPOINT [ "uwsgi" ]
-
-CMD [ "--socket", "0.0.0.0:5000", "--protocol=http", "-w", "wsgi:app"]
+CMD gunicorn app:app -b 0.0.0.0:5000
