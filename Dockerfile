@@ -7,6 +7,8 @@ RUN apk add --no-cache\
 		linux-headers \
 	;
 
+RUN apk add postgresql-client
+
 WORKDIR /echopy
 
 COPY ./requirements.txt requirements.txt
